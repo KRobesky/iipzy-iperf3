@@ -1,0 +1,20 @@
+[Unit]
+Description=Node.js iipzy-iperf3 
+
+[Service]
+ExecStart=/usr/bin/node /root/iipzy-service/iipzy-iperf3/src/index.js
+# Required on some systems
+#WorkingDirectory=/root/iipzy-service/iipzy-iperf3
+Restart=always
+# Restart service after 10 seconds if node service crashes
+RestartSec=10
+# Output to syslog
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=iipzy-iperf3
+#User=<alternate user>
+#Group=<alternate group>
+Environment=NODE_ENV=production PORT=8003
+
+[Install]
+WantedBy=multi-user.target
