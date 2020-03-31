@@ -71,7 +71,7 @@ function startIperf3Server(port, clientToken, iperf3Token, cancelToken) {
     let one = 1;
     let zero = 0;
     let divbyzero = one / zero;
-    console.log(divbyzero);
+    log("divbyzero: " + divbyzero);
     exec = spawn(iperf3Path, args);
     iperf3Servers.set(port, true);
   } catch (ex) {
