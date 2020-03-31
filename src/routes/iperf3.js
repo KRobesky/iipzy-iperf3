@@ -49,32 +49,31 @@ for (let i = 0; i < numIperf3Servers; i++) {
 }
 let requestCount = 0;
 
-function startIperf3Server(
-  port,
-  clientToken,
-  iperf3Token,
-  requestCount,
-  cancelToken
-) {
+function startIperf3Server(port, clientToken, iperf3Token, cancelToken) {
   log(
     "startIperf3Server: clientToken = " +
       clientToken +
       ", iper3Token = " +
       iperf3Token +
-      ", requestCount = " +
-      requestCount +
       ", cancelToken = " +
-      cancelToken,
+      cancelToken +
+      ", requestCount = " +
+      requestCount,
     "rout"
   );
-
-  iperf3Servers.set(port, true);
 
   const args = ["-s", "-p", port, "--one-off", "--forceflush"];
 
   log("iperf3 args: " + args, "rout");
 
-  let exec = spawn(iperf3Path, args);
+  let exec = null;
+  try {
+    exec = spawn(iperf3Path, args);
+    iperf3Servers.set(port, true);
+  } catch (ex) {
+    log("(Exception) startIperf3Server: " + ex);
+    return ex.message;
+  }
 
   iperf3ExecByCancelToken.set(cancelToken, exec);
 
@@ -122,6 +121,8 @@ function startIperf3Server(
     iperf3Servers.set(port, false);
     iperf3ExecByCancelToken.delete(cancelToken);
   });
+
+  return null;
 }
 
 router.delete("/", async (req, res) => {
@@ -198,13 +199,22 @@ router.get("/", async (req, res) => {
 
   requestCount++;
   const cancelToken = uuidv4();
-  startIperf3Server(
+  const message = startIperf3Server(
     freePort,
     clientToken,
     iperf3Token,
-    requestCount,
     cancelToken
   );
+
+  if (message) {
+    const results = handleError(
+      Defs.objectType_clientInstance,
+      clientToken,
+      Defs.statusIperf3ServerFailed,
+      "Iperf3 server failed to start: " + message
+    );
+    return res.status(Defs.httpStatusUnprocessableEntity).send(results);
+  }
 
   setTimeout(() => {
     // give it a quarter second to start.
