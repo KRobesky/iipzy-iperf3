@@ -68,10 +68,7 @@ function startIperf3Server(port, clientToken, iperf3Token, cancelToken) {
 
   let exec = null;
   try {
-    let one = 1;
-    let zero = 0;
-    let divbyzero = one / zero;
-    log("divbyzero: " + divbyzero);
+    throw "test exception";
     exec = spawn(iperf3Path, args);
     iperf3Servers.set(port, true);
   } catch (ex) {
