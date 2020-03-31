@@ -72,8 +72,8 @@ function startIperf3Server(port, clientToken, iperf3Token, cancelToken) {
     exec = spawn(iperf3Path, args);
     iperf3Servers.set(port, true);
   } catch (ex) {
-    log("(Exception) startIperf3Server: " + ex.message);
-    return ex.message;
+    log("(Exception) startIperf3Server: " + ex);
+    return ex;
   }
 
   iperf3ExecByCancelToken.set(cancelToken, exec);
