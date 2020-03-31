@@ -207,6 +207,8 @@ router.get("/", async (req, res) => {
     cancelToken
   );
 
+  log("---message = " + message);
+
   if (message) {
     const results = handleError(
       Defs.objectType_clientInstance,
